@@ -152,7 +152,7 @@ http {
 | Sky-poji     | 存放实体类  |
 | Sky-server   | 后端服务    |
 
-![0794d37384d4103acbb686acf378f872](assets/0794d37384d4103acbb686acf378f872.png)
+![0794d37384d4103acbb686acf378f872](README.assets/0794d37384d4103acbb686acf378f872.png)
 
 ## 3.数据库
 
