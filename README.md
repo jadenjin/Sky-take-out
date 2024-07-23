@@ -365,3 +365,133 @@ order_detail表为订单明细表，用于存储C端用户的订单明细数据�
 | number      | int           | 商品数量     |          |
 | amount      | decimal(10,2) | 商品单价     |          |
 
+## 4.nginx
+
+nginx反向代理
+
+### 优点
+
+- 提高访问速度
+- 进行负载均衡
+- 保证后端服务安全
+
+### 配置
+
+反向代理
+
+```
+server {
+    listen 80;
+    server_name localhost;
+
+    location /api/ {
+        proxy_pass http://localhost:8080/admin/; #反向代理
+    }
+}
+```
+
+![image-20240723133238867](README.assets/image-20240723133238867.png)
+
+负载均衡
+
+```
+upstream webservers {
+    server 192.168.100.128:8080;
+    server 192.168.100.129:8080;
+}
+
+server {
+    listen 80;
+    server_name localhost;
+
+    location /api/ {
+        proxy_pass http://webservers/admin/; #负载均衡
+    }
+}
+```
+
+### nginx负载均衡策略：
+
+![image-20240723133602071](README.assets/image-20240723133602071.png)
+
+## 5.登陆
+
+### MD5加密
+
+提高安全性，单向加密，只能比对
+
+```
+//进行md5加密，然后再进行比对
+password = DigestUtils.md5DigestAsHex(password.getBytes());
+if (!password.equals(employee.getPassword())) {
+    //密码错误
+    throw new PasswordErrorException(MessageConstant.PASSWORD_ERROR);
+}
+```
+
+## 6.接口
+
+### 前后端开发流程
+
+![image-20240723140324983](README.assets/image-20240723140324983.png)
+
+### Swagger 
+
+Knife4j
+
+```
+<dependency>
+    <groupId>com.github.xiaoymin</groupId>
+    <artifactId>knife4j-spring-boot-starter</artifactId>
+    <version>3.0.2</version>
+</dependency>
+```
+
+1. 导入maven坐标
+2. 配置类加入Knife4j配置
+3. 设置静态资源映射
+
+```
+@Bean
+public Docket docket() {
+    ApiInfo apiInfo = new ApiInfoBuilder()
+        .title("苍穹外卖项目接口文档")
+        .version("2.0")
+        .description("苍穹外卖项目接口文档")
+        .build();
+
+    Docket docket = new Docket(DocumentationType.SWAGGER_2)
+        .apiInfo(apiInfo)
+        .select()
+        .apis(RequestHandlerSelectors.basePackage("com.sky.controller"))
+        .paths(PathSelectors.any())
+        .build();
+
+    return docket;
+}
+```
+
+```
+/**
+ * 设置信息静态资源映射
+ * @param registry
+ */
+protected void addResourceHandlers(ResourceHandlerRegistry registry) {
+    log.info("开始设置信息静态资源映射...");
+    registry.addResourceHandler("/doc.html").addResourceLocations("classpath:/META-INF/resources/");
+    registry.addResourceHandler("/webjars/**").addResourceLocations("classpath:/META-INF/resources/webjars/");
+}
+
+```
+
+常用注解
+
+| 注解              | 说明                        |
+| ----------------- | --------------------------- |
+| @Api              | 用在类上，例如Controller    |
+| @ApiModel         | 用在类上，例如entity,DTO,VO |
+| @ApiModelProperty | 用在属性上，描述属性信息    |
+| @ApiOperation     | 用在方法上，例如Controller  |
+
+## 7.新增员工
+
